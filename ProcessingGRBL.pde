@@ -1,37 +1,51 @@
-import processing.serial.*;
+import controlP5.*;
+ControlP5 cp5;
+int myColor = color(0, 0, 0);
 
-Serial myPort;  // Create object from Serial class
 
-PVector bum;
-PVector hole;
-void setup() 
-{
-  size(200,200); //make our canvas 200 x 200 pixels big
- // String portName = Serial.list()[0]; //change the 0 to a 1 or 2 etc. to match your port
-  //myPort = new Serial(this, portName, 9600);
+int n = 6;
+int d = 72;
+
+PVector points;
+
+
+void setup() {
+  size(800, 800);
+  cp5 = new ControlP5(this);
+  pushMatrix();
+  cp5.addSlider("n")
+    .setPosition(100, 50)
+    .setRange(0, 100)
+    ;
+
+  cp5.addSlider("d")
+    .setPosition(100, 100)
+    .setRange(0, 100)
+    ;
+  popMatrix();
 }
-
 
 void draw() {
+  background(0);
+  stroke(255);
   strokeWeight(1);
- 
-   for (int i = 0; i < width; i=i+20){
-    for (int j = 0; j < height; j=j+20) {
-      bum = new PVector(i, j);
-       hole = new PVector(i+random(-10.0, 10.0), j+random(-10.0, 10.0));
-      beginShape();
-      vertex(bum.x,bum.y);
-      vertex(hole.x,hole.y);     
-      endShape(CLOSE);     
-      //myPort.Write(bum.x);
-       String str =  "G0 X" + bum.x + "G0 Y" + bum.y;
-       println(str);
-     }
-    }
-    fill(200, 200, 200, 20);
-    rect(0, 0, width, height);
 
+  pushMatrix();
+  translate(width/2, height/2);
+  noFill();
+
+  beginShape();
+  for (float i = 0; i<361; i++) {
+    float k = i*d;
+    float r = 250*sin(n*k);
+    float x = r * cos(k);
+    float y = r * sin(k);
+
+    points = new PVector(x, y);
+    curveVertex(points.x, points.y);
+    String str =  "G1 X" + points.x + " " + "Y" + points.y;
+    println(str);
+  }
+  endShape(CLOSE);
+  popMatrix();
 }
-
-
-
